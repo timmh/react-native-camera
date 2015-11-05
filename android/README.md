@@ -7,7 +7,7 @@ Steps to add this to your react-native android project:
 * add to your `settings.gradle`:
 ```
 include ':com.lwansbrough.ReactCamera'
-project(':include ':com.lwansbrough.ReactCamera').projectDir = new File(settingsDir, '../node_modules/react-native-camera/android')
+project(':com.lwansbrough.ReactCamera').projectDir = new File(settingsDir, '../node_modules/react-native-camera/android')
 ```
 * add to your `app/build.gradle`:
 ```
