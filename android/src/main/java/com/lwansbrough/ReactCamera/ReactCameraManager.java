@@ -26,9 +26,6 @@ public class ReactCameraManager extends SimpleViewManager<ReactCameraView> {
         return REACT_CLASS;
     }
 
-    @UIProp(UIProp.Type.STRING)
-    public static final String PROP_PLACEHOLDERPROP = "placeholderprop";
-
     @Override
     public ReactCameraView createViewInstance(ThemedReactContext context) {
         ReactCameraView view = new ReactCameraView(context, this.getCameraInstance());
