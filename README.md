@@ -1,4 +1,4 @@
-# react-native-camera
+# react-native-camera [![npm version](https://badge.fury.io/js/react-native-camera.svg)](http://badge.fury.io/js/react-native-camera)
 
 A camera module for React Native.
 
@@ -15,7 +15,7 @@ Below is a list of known issues. Pull requests are welcome for any of these issu
 2. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 3. Go to `node_modules` ➜ `react-native-camera` and add `RCTCamera.xcodeproj`
 4. In XCode, in the project navigator, select your project. Add `libRCTCamera.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-5. Click `RCTCamera.xcodeproj` in the project navigator and go the `Build Settings` tab. Make sure 'All' is toggled on (instead of 'Basic'). Look for `Header Search Paths` and make sure it contains both `$(SRCROOT)/../../react-native/React` and `$(SRCROOT)/../../../React` - mark both as `recursive`.
+5. Click `RCTCamera.xcodeproj` in the project navigator and go the `Build Settings` tab. Make sure 'All' is toggled on (instead of 'Basic'). In the `Search Paths` section, look for `Header Search Paths` and make sure it contains both `$(SRCROOT)/../../react-native/React` and `$(SRCROOT)/../../../React` - mark both as `recursive`.
 5. Run your project (`Cmd+R`)
 
 ## Usage
@@ -127,7 +127,7 @@ The type of capture that will be performed by the camera - either a still image 
 
 #### `captureTarget`
 
-Values: `Camera.constants.CaptureTarget.cameraRoll` (default), `Camera.constants.CaptureTarget.disk`, ~~`Camera.constants.CaptureTarget.memory`~~ (deprecated), 
+Values: `Camera.constants.CaptureTarget.cameraRoll` (default), `Camera.constants.CaptureTarget.disk`, ~~`Camera.constants.CaptureTarget.memory`~~ (deprecated),
 
 This property allows you to specify the target output of the captured image data. By default the image binary is sent back as a base 64 encoded string. The disk output has been shown to improve capture response time, so that is the recommended value.
 
@@ -165,6 +165,7 @@ The following barcode types can be recognised:
 - `pdf417`
 - `qr`
 - `upce`
+- `datamatrix` (when available)
 
 The barcode type is provided in the `data` object.
 
@@ -185,6 +186,40 @@ Values:
 `Camera.constants.TorchMode.auto`
 
 Use the `torchMode` property to specify the camera torch mode.
+
+#### `onFocusChanged`
+
+Args:
+```
+e: {
+  nativeEvent: {
+    touchPoint: { x, y }
+  }
+}
+```
+Will call when touch to focus has been made.
+By default, `onFocusChanged` is not defined and tap-to-focus is disabled.
+
+#### `defaultOnFocusComponent`
+
+Values:
+`true` (default)
+`false`
+
+If `defaultOnFocusComponent` set to false, default internal implementation of visual feedback for tap-to-focus gesture will be disabled.
+
+#### `onZoomChanged`
+
+Args:
+```
+  e: {
+    nativeEvent: {
+      velocity, zoomFactor
+    }
+  }
+```
+Will call when focus has changed.
+By default, `onZoomChanged` is not defined and pinch-to-zoom is disabled.
 
 ## Component methods
 
@@ -209,15 +244,6 @@ Ends the current capture session for video captures. Only applies when the curre
 
 ## Subviews
 This component supports subviews, so if you wish to use the camera view as a background or if you want to layout buttons/images/etc. inside the camera then you can do that.
-
-## Todo
-These are some features I think would be important/beneficial to have included with this module. Pull requests welcome!
-
-- [x] Video support
-- [x] Flash mode setting
-- [x] Automatic orientation adjustment
-- [ ] Tap to focus
-- [ ] Optional facial recognition (w/ ability to style box around face)
 
 ------------
 

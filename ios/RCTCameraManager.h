@@ -59,6 +59,8 @@ typedef NS_ENUM(NSInteger, RCTCameraTorchMode) {
 @property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic) NSInteger videoTarget;
 @property (nonatomic, strong) RCTResponseSenderBlock videoCallback;
+@property (nonatomic, strong) RCTCamera *camera;
+
 
 - (void)changeAspect:(NSString *)aspect;
 - (void)changeCamera:(NSInteger)camera;
@@ -71,5 +73,8 @@ typedef NS_ENUM(NSInteger, RCTCameraTorchMode) {
 - (void)stopCapture;
 - (void)startSession;
 - (void)stopSession;
+- (void)focusAtThePoint:(CGPoint) atPoint;
+- (void)zoom:(CGFloat)velocity reactTag:(NSNumber *)reactTag;
+
 
 @end
