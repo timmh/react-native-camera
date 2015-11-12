@@ -15,7 +15,8 @@ var Camera = require('react-native-camera'); //require the camera component
 var ReactNativeCameraExample = React.createClass({
     getInitialState: function() {
         return ({
-            capturedBase64: ''
+            capturedBase64: '',
+            type: 'front'
         });
     },
 
@@ -23,7 +24,7 @@ var ReactNativeCameraExample = React.createClass({
         var component = this;
         return (
             <View style={styles.container}>
-                <Camera style={styles.camera} ref="cam"></Camera>
+                <Camera style={styles.camera} ref="cam" type={this.state.type} captureTarget={Camera.constants.CaptureTarget.cameraRoll}></Camera>
                 <Image
                 source={{
                     isStatic: true,
@@ -49,7 +50,7 @@ var styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#F5FCFF'
     },
     camera: {
         position: 'absolute',
