@@ -23,6 +23,6 @@ dependencies {
 	```
 	mReactInstanceManager = ReactInstanceManager.builder()
 		...
-		.addPackage(new ReactCameraPackage())
+		.addPackage(new ReactCameraPackage(this))
 		...
 	```
