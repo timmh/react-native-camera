@@ -24,7 +24,7 @@ var ReactNativeCameraExample = React.createClass({
         var component = this;
         return (
             <View style={styles.container}>
-                <Camera style={styles.camera} ref="cam" type={this.state.type} captureTarget={Camera.constants.CaptureTarget.cameraRoll}></Camera>
+                <Camera style={styles.camera} ref="cam" type={this.state.type} captureTarget={Camera.constants.CaptureTarget.memory}></Camera>
                 <Image
                 source={{
                     isStatic: true,
