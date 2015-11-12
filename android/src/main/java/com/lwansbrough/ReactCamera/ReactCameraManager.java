@@ -1,8 +1,8 @@
 package com.lwansbrough.ReactCamera;
 
 import android.content.Context;
-import android.util.Log;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.ReactMethod;
@@ -10,42 +10,43 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIProp;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
 
 import android.hardware.Camera;
 import android.widget.Toast;
+import android.util.Log;
+import javax.annotation.Nullable;
 
 public class ReactCameraManager extends SimpleViewManager<ReactCameraView> {
 
     public static final String REACT_CLASS = "ReactCameraView";
     private Camera camera = null;
     private ThemedReactContext context;
+    private ReactApplicationContext reactApplicationContext;
+
+    private CameraInstanceManager cameraInstanceManager;
+
+    public ReactCameraManager(CameraInstanceManager cameraInstanceManager) {
+        this.cameraInstanceManager = cameraInstanceManager;
+    }
 
     @Override
     public String getName() {
         return REACT_CLASS;
     }
 
-    @Override
-    public ReactCameraView createViewInstance(ThemedReactContext context) {
-        ReactCameraView view = new ReactCameraView(context, this.getCameraInstance());
-        this.context = context;
-        return view;
+    @ReactProp(name = "type")
+    public void setType(ReactCameraView cameraView, @Nullable String type) {
+        Log.v("ReactCameraManager", "setType");
+        cameraView.updateCamera(cameraInstanceManager.getCamera(type));
     }
 
-    public Camera getCameraInstance(){
-        if (this.camera != null) {
-            return camera;
-        } else {
-            Camera camera = null;
-            try {
-                camera = Camera.open();
-            }
-            catch (Exception e) {
-
-            }
-            return camera;
-        }
+    @Override
+    public ReactCameraView createViewInstance(ThemedReactContext context) {
+        ReactCameraView view = new ReactCameraView(context, cameraInstanceManager);
+        this.context = context;
+        return view;
     }
 
     @Override
