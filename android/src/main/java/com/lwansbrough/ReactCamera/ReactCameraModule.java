@@ -47,7 +47,6 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void capture(ReadableMap options, final Callback callback) {
         Camera camera = cameraInstanceManager.getCamera(options.getString("type"));
-        camera.stopPreview();
         camera.takePicture(null, null, new PictureTakenCallback(options, callback, reactContext));
     }
 

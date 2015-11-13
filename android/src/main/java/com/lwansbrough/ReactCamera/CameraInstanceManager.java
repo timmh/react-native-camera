@@ -34,6 +34,11 @@ public class CameraInstanceManager {
             case "back": cameraId = 0; break;
             case "front": cameraId = 1; break;
         }
+        for (int i = 0; i < cameraInstanceList.length; i++) {
+            if (i != cameraId) {
+                releaseCamera(cameraInstanceList[i]);
+            }
+        }
         return getCamera(cameraId);
     }
 
