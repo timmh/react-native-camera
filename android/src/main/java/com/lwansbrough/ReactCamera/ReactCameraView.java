@@ -73,7 +73,6 @@ class ReactCameraView extends SurfaceView implements SurfaceHolder.Callback {
     public void updateCamera(Camera newCamera) {
         if (newCamera != camera) {
             try {
-                surfaceDestroyed(surfaceHolder);
                 camera = newCamera;
                 cameraId = cameraInstanceManager.getCameraId(camera);
                 surfaceCreated(getHolder());

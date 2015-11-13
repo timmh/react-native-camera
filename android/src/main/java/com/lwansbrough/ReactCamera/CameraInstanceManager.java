@@ -30,9 +30,15 @@ public class CameraInstanceManager {
     public Camera getCamera(String name) {
         name = name.toLowerCase();
         int cameraId = 0;
+        int releaseId = 1;
         switch (name) {
-            case "back": cameraId = 0; break;
-            case "front": cameraId = 1; break;
+            case "back": cameraId = 0; releaseId = 1; break;
+            case "front": cameraId = 1; releaseId = 0; break;
+        }
+        for (int i = 0; i < cameraInstanceList.length; i++) {
+            if (i != cameraId) {
+                releaseCamera(cameraInstanceList[i]);
+            }
         }
         return getCamera(cameraId);
     }
