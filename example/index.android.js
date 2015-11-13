@@ -20,6 +20,13 @@ var ReactNativeCameraExample = React.createClass({
         });
     },
 
+    switchCamera: function() {
+        var state = this.state;
+        state.type = state.type === Camera.constants.Type.back
+          ? Camera.constants.Type.front : Camera.constants.Type.back;
+        this.setState(state);
+    },
+
     render: function() {
         var component = this;
         return (
@@ -34,11 +41,17 @@ var ReactNativeCameraExample = React.createClass({
                 />
             <TouchableHighlight style={styles.captureButton} onPress={function() {
                 component.refs.cam.capture().then(function(capturedBase64) {
+                    console.log(capturedBase64);
                     component.setState({ capturedBase64 });
                     setTimeout(() => component.setState({ capturedBase64: '' }), 5000);
                 });
             }}>
                 <Text style={{textAlign: 'center'}}>Capture</Text>
+            </TouchableHighlight>
+
+
+            <TouchableHighlight style={styles.switchButton} onPress={this.switchCamera}>
+                <Text style={{textAlign: 'center'}}>Switch</Text>
             </TouchableHighlight>
             </View>
         );
@@ -66,8 +79,14 @@ var styles = StyleSheet.create({
         left: 50, bottom: 20, right: 50,
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
-        textAlign: 'center'
-    }
+    },
+    switchButton: {
+        position: 'absolute',
+        height: 50,
+        left: 50, top: 20, right: 50,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+    },
 });
 
 AppRegistry.registerComponent('ReactNativeCameraExample', () => ReactNativeCameraExample);
