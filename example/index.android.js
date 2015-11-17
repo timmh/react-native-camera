@@ -16,15 +16,12 @@ var ReactNativeCameraExample = React.createClass({
     getInitialState: function() {
         return ({
             capturedBase64: '',
-            type: 'front'
+            type: Camera.constants.Type.back
         });
     },
 
     switchCamera: function() {
-        var state = this.state;
-        state.type = state.type === Camera.constants.Type.back
-          ? Camera.constants.Type.front : Camera.constants.Type.back;
-        this.setState(state);
+        this.setState({ type: this.state.type === Camera.constants.Type.back ? Camera.constants.Type.front : Camera.constants.Type.back });
     },
 
     render: function() {
@@ -40,8 +37,7 @@ var ReactNativeCameraExample = React.createClass({
                 style={styles.captured}
                 />
             <TouchableHighlight style={styles.captureButton} onPress={function() {
-                component.refs.cam.capture().then(function(capturedBase64) {
-                    console.log(capturedBase64);
+                component.refs.cam.capture({ sampleSize: 10 }).then(function(capturedBase64) {
                     component.setState({ capturedBase64 });
                     setTimeout(() => component.setState({ capturedBase64: '' }), 5000);
                 });
