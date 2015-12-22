@@ -1,4 +1,5 @@
 var React = require('react-native');
+var View = require('View');
 var { StyleSheet, requireNativeComponent, PropTypes, NativeModules, DeviceEventEmitter } = React;
 
 var CAMERA_REF = 'camera';
@@ -16,6 +17,7 @@ var constants = {
 
 var Camera = React.createClass({
   propTypes: {
+    ...View.propTypes,
     aspect: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number
