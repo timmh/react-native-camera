@@ -1,5 +1,5 @@
 var React = require('react-native');
-var { StyleSheet, requireNativeComponent, PropTypes, NativeModules, DeviceEventEmitter } = React;
+var { StyleSheet, requireNativeComponent, PropTypes, NativeModules, DeviceEventEmitter, View } = React;
 
 var CAMERA_REF = 'camera';
 

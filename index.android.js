@@ -1,5 +1,5 @@
 var React = require('react-native');
-var { requireNativeComponent, PropTypes, NativeModules } = React;
+var { requireNativeComponent, PropTypes, NativeModules, View } = React;
 
 var ReactNativeCameraModule = NativeModules.ReactCameraModule;
 var ReactCameraView = requireNativeComponent('ReactCameraView', {
