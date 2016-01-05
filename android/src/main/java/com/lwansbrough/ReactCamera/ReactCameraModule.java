@@ -18,6 +18,9 @@ import android.graphics.Matrix;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ReactCameraModule extends ReactContextBaseJavaModule {
     ReactApplicationContext reactContext;
@@ -47,7 +50,9 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void capture(ReadableMap options, final Callback callback) {
         Camera camera = cameraInstanceManager.getCamera(options.getString("type"));
-        camera.takePicture(null, null, new PictureTakenCallback(options, callback, reactContext));
+        camera.startPreview();
+        camera.takePicture(null, null, null, new PictureTakenCallback(options, callback, reactContext));
+        //camera.stopPreview();
     }
 
     private class PictureTakenCallback implements Camera.PictureCallback {
@@ -70,19 +75,22 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            camera.startPreview();
 
             int cameraOrientation = cameraInstanceManager.getCameraOrientation(camera);
 
             BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
             bitmapOptions.inSampleSize = options.getInt("sampleSize");
-            Bitmap bitmap = RotateBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions), -90);
+            Bitmap bitmap = RotateBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions), 90);
+
+
+            byte[] byteArray;
+            ByteArrayOutputStream stream;
 
             switch(options.getString("target")) {
                 case "base64":
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                    byte[] byteArray = stream.toByteArray();
+                    byteArray = stream.toByteArray();
                     String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
                     callback.invoke(encoded);
                 break;
@@ -90,10 +98,27 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
                     Media.insertImage(reactContext.getContentResolver(), bitmap, options.getString("title"), options.getString("description"));
                     callback.invoke();
                 break;
-                case "file":
-                    callback.invoke();
+                case "disk":
+                    String fileprefix = "shot";
+                    String filesuffix = ".jpg";
+                    try{
+                      stream = new ByteArrayOutputStream();
+                      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                      byteArray = stream.toByteArray();
+
+                      File file = File.createTempFile(fileprefix, filesuffix, reactContext.getCacheDir());
+                      FileOutputStream fstream = new FileOutputStream(file);
+                      fstream.write(byteArray);
+                      fstream.flush();
+                      fstream.close();
+                      callback.invoke(file.getPath());
+                    }catch(IOException e){
+                      e.printStackTrace();
+                      callback.invoke();
+                    }
                 break;
             }
         }
+
     }
 }
