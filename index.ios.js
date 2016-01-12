@@ -11,7 +11,7 @@ var constants = {
   CaptureTarget: NativeModules.CameraManager.CaptureTarget,
   Orientation: NativeModules.CameraManager.Orientation,
   FlashMode: NativeModules.CameraManager.FlashMode,
-  TorchMode: NativeModules.CameraManager.TorchMode,
+  TorchMode: NativeModules.CameraManager.TorchMode
 };
 
 var Camera = React.createClass({
@@ -200,4 +200,6 @@ var styles = StyleSheet.create({
 });
 
 Camera.constants = constants;
+Camera.checkDeviceAuthorizationStatus = NativeModules.CameraManager.checkDeviceAuthorizationStatus
+
 module.exports = Camera;
