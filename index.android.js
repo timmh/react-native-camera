@@ -1,6 +1,5 @@
 var React = require('react-native');
-var View = require('View');
-var { requireNativeComponent, PropTypes, NativeModules } = React;
+var { requireNativeComponent, PropTypes, NativeModules, View } = React;
 
 var ReactNativeCameraModule = NativeModules.ReactCameraModule;
 var ReactCameraView = requireNativeComponent('ReactCameraView', {
@@ -100,7 +99,7 @@ var ReactCameraViewWrapper = React.createClass({
                 options = {};
             }
             ReactNativeCameraModule.capture(Object.assign(defaultOptions, options || {}), function(encoded) {
-                if (typeof callback === 'function') callback(encoded);
+                if (typeof callback === 'function') callback(null, encoded);
                 resolve(encoded);
             });
         });
