@@ -48,10 +48,4 @@ public class ReactCameraManager extends SimpleViewManager<ReactCameraView> {
         this.context = context;
         return view;
     }
-
-    @Override
-    public void updateView(final ReactCameraView view, final CatalystStylesDiffMap props) {
-        super.updateView(view, props);
-        view.maybeUpdateView();
-    }
 }
