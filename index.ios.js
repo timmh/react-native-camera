@@ -1,6 +1,5 @@
 var React = require('react-native');
-var View = require('View');
-var { StyleSheet, requireNativeComponent, PropTypes, NativeModules, DeviceEventEmitter } = React;
+var { StyleSheet, requireNativeComponent, PropTypes, NativeModules, DeviceEventEmitter, View } = React;
 
 var CAMERA_REF = 'camera';
 
@@ -86,7 +85,7 @@ var Camera = React.createClass({
 
   componentWillUnmount() {
     this.cameraBarCodeReadListener.remove();
-    
+
     if (this.state.isRecording) {
       this.stopCapture();
     }
@@ -122,7 +121,7 @@ var Camera = React.createClass({
     if (typeof aspect === 'string') {
       aspect = constants.Aspect[aspect];
     }
-    
+
     if (typeof flashMode === 'string') {
       flashMode = constants.FlashMode[flashMode];
     }
@@ -130,7 +129,7 @@ var Camera = React.createClass({
     if (typeof orientation === 'string') {
       orientation = constants.Orientation[orientation];
     }
-    
+
     if (typeof torchMode === 'string') {
       torchMode = constants.TorchMode[torchMode];
     }
@@ -171,7 +170,7 @@ var Camera = React.createClass({
     if (typeof options.mode === 'string') {
       options.mode = constants.CaptureMode[options.mode];
     }
-    
+
     if (options.mode === constants.CaptureMode.video) {
       options.totalSeconds = (options.totalSeconds > -1 ? options.totalSeconds : -1);
       options.preferredTimeScale = options.preferredTimeScale || 30;
