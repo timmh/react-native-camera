@@ -5,6 +5,9 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.util.Base64;
 import android.widget.Toast;
+import android.util.Log;
+
+import android.os.Environment;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -21,6 +24,8 @@ import java.util.HashMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ReactCameraModule extends ReactContextBaseJavaModule {
     ReactApplicationContext reactContext;
@@ -50,9 +55,8 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void capture(ReadableMap options, final Callback callback) {
         Camera camera = cameraInstanceManager.getCamera(options.getString("type"));
-        camera.stopPreview();
+        camera.startPreview();
         camera.takePicture(null, null, null, new PictureTakenCallback(options, callback, reactContext));
-
     }
 
     private class PictureTakenCallback implements Camera.PictureCallback {
@@ -66,59 +70,93 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
             this.reactContext = reactContext;
         }
 
-        private Bitmap RotateBitmap(Bitmap original, int deg)
-        {
-            Matrix matrix = new Matrix();
-            matrix.postRotate((float)deg);
-            return Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), matrix, true);
-        }
-
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             camera.startPreview();
-            int cameraOrientation = cameraInstanceManager.getCameraOrientation(camera);
-
-            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-            bitmapOptions.inSampleSize = options.getInt("sampleSize");
-            Bitmap bitmap = RotateBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions), 90);
-
-
-            byte[] byteArray;
-            ByteArrayOutputStream stream;
 
             switch(options.getString("target")) {
                 case "base64":
+                    Bitmap bitmap = getBitmapFromData(data, camera, options);
+                    byte[] byteArray;
+                    ByteArrayOutputStream stream;
                     stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byteArray = stream.toByteArray();
                     String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    callback.invoke(encoded);
+                    callback.invoke(null, encoded);
                 break;
                 case "gallery":
-                    Media.insertImage(reactContext.getContentResolver(), bitmap, options.getString("title"), options.getString("description"));
+                    Bitmap gBitmap = getBitmapFromData(data, camera, options);
+                    Media.insertImage(reactContext.getContentResolver(), gBitmap, options.getString("title"), options.getString("description"));
                     callback.invoke();
                 break;
                 case "disk":
-                    String fileprefix = "shot";
-                    String filesuffix = ".jpg";
-                    try{
-                      stream = new ByteArrayOutputStream();
-                      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                      byteArray = stream.toByteArray();
-
-                      File file = File.createTempFile(fileprefix, filesuffix, reactContext.getCacheDir());
-                      FileOutputStream fstream = new FileOutputStream(file);
-                      fstream.write(byteArray);
-                      fstream.flush();
-                      fstream.close();
-                      callback.invoke(file.getPath());
-                    }catch(IOException e){
-                      e.printStackTrace();
-                      callback.invoke();
+                    File pictureFile = getOutputMediaFile();
+                    if (pictureFile == null){
+                        callback.invoke("directory error");
+                        return;
+                    }
+                    try {
+                        FileOutputStream fos = new FileOutputStream(pictureFile);
+                        fos.write(data);
+                        fos.close();
+                        callback.invoke(null, pictureFile.getAbsolutePath());
+                    } catch (Exception e) {
+                        callback.invoke(e.getMessage());
+                        e.printStackTrace();
                     }
                 break;
             }
         }
+    }
 
+    private File getOutputMediaFile(){
+        try {
+            // Create a media file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String root = Environment.getExternalStorageDirectory().toString();
+            File myDir = new File(root + "/rncamera");
+            myDir.mkdirs();
+            if(myDir.exists())
+                Log.v("camera", "directory created");
+            else
+                Log.v("camera", "directory still not created");
+            File mediaFile;
+            mediaFile = new File(myDir, "IMG_"+ timeStamp + ".jpg");
+            mediaFile.createNewFile( );
+            if(mediaFile.exists())
+                Log.v("camera", "file created now");
+            else
+                Log.v("camera", "file still not created");
+
+            if(mediaFile.isDirectory())
+                Log.v("camera", "is directory");
+            else
+                Log.v("camera", "is file");
+            Log.v("camera", mediaFile.getAbsolutePath());
+            return mediaFile;
+        }
+        catch(SecurityException e) {
+            Log.v("camera", e.getMessage());
+            return null;
+        }
+        catch(IOException e) {
+            Log.v("camera", e.getMessage());
+            return null;
+        }
+    }
+
+    private Bitmap getBitmapFromData(byte[] data, Camera camera, ReadableMap options){
+        int cameraOrientation = cameraInstanceManager.getCameraOrientation(camera);
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inSampleSize = options.getInt("sampleSize");
+        Bitmap bitmap = RotateBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions), 90);
+        return bitmap;
+    }
+
+    private Bitmap RotateBitmap(Bitmap original, int deg){
+        Matrix matrix = new Matrix();
+        matrix.postRotate((float)deg);
+        return Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), matrix, true);
     }
 }
