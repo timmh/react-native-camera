@@ -98,9 +98,9 @@ var ReactCameraViewWrapper = React.createClass({
                 callback = options;
                 options = {};
             }
-            ReactNativeCameraModule.capture(Object.assign(defaultOptions, options || {}), function(encoded) {
-                if (typeof callback === 'function') callback(null, encoded);
-                resolve(encoded);
+            ReactNativeCameraModule.capture(Object.assign(defaultOptions, options || {}), function(err, data) {
+                if (typeof callback === 'function') callback(err, data);
+                err ? reject(err) : resolve(data);
             });
         });
     }
