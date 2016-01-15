@@ -91,8 +91,20 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
                     callback.invoke();
                 break;
                 case "disk":
-                    File pictureFile = getOutputMediaFile();
-                    if (pictureFile == null){
+                    String outputDirectoryPath = null;
+                    String outputFileName = null;
+                    try {
+                        outputDirectoryPath = options.getString("outputDirectoryPath");
+                    } catch (Exception e) {
+                        Log.v("camera", e.getMessage());
+                    }
+                    try {
+                        outputFileName = options.getString("outputFileName");
+                    } catch (Exception e) {
+                        Log.v("camera", e.getMessage());
+                    }
+                    File pictureFile = getOutputMediaFile(outputDirectoryPath, outputFileName);
+                    if (pictureFile == null) {
                         callback.invoke("directory error");
                         return;
                     }
@@ -110,37 +122,43 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private File getOutputMediaFile(){
+    private File getOutputMediaFile(String outputDirectoryPath, String outputFileName){
         try {
-            // Create a media file name
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String root = Environment.getExternalStorageDirectory().toString();
-            File myDir = new File(root + "/rncamera");
-            myDir.mkdirs();
-            if(myDir.exists())
+            // Create a media file path
+            if (outputDirectoryPath == null) {
+                outputDirectoryPath = Environment.getExternalStorageDirectory().toString();
+            }
+            if (outputFileName == null) {
+                outputFileName = "IMG_"+ (new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) + ".jpg";
+            }
+            File outputDirectory = new File(outputDirectoryPath);
+            outputDirectory.mkdirs();
+            if (outputDirectory.exists()) {
                 Log.v("camera", "directory created");
-            else
+            } else {
                 Log.v("camera", "directory still not created");
-            File mediaFile;
-            mediaFile = new File(myDir, "IMG_"+ timeStamp + ".jpg");
-            mediaFile.createNewFile( );
-            if(mediaFile.exists())
-                Log.v("camera", "file created now");
-            else
-                Log.v("camera", "file still not created");
+            }
 
-            if(mediaFile.isDirectory())
+            File outputFile = new File(outputDirectory, outputFileName);
+            outputFile.createNewFile();
+            if (outputFile.exists()) {
+                Log.v("camera", "file created now");
+            } else {
+                Log.v("camera", "file still not created");
+            }
+
+            if (outputFile.isDirectory()) {
                 Log.v("camera", "is directory");
-            else
+            } else {
                 Log.v("camera", "is file");
-            Log.v("camera", mediaFile.getAbsolutePath());
-            return mediaFile;
-        }
-        catch(SecurityException e) {
+            }
+            Log.v("camera", outputFile.getAbsolutePath());
+
+            return outputFile;
+        } catch (SecurityException e) {
             Log.v("camera", e.getMessage());
             return null;
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             Log.v("camera", e.getMessage());
             return null;
         }
