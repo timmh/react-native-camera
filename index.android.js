@@ -48,6 +48,7 @@ var constants = {
     'CaptureTarget': {
         'memory': 'base64',
         'disk': 'disk',
+        'temp': 'temp',
         'cameraRoll': 'gallery'
     },
     'Orientation': {
