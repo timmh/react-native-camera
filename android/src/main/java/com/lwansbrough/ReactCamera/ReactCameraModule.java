@@ -117,6 +117,7 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
                         callback.invoke(e.getMessage());
                         e.printStackTrace();
                     }
+                break;
                 case "temp":
                     File tempFile = getTempMediaFile();
                     if (tempFile == null) {

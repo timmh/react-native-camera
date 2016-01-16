@@ -84,6 +84,7 @@ public class CameraInstanceManager {
         Camera.Parameters cameraParameters = camera.getParameters();
         camera.setDisplayOrientation(cameraRotation);
         cameraParameters.setRotation(cameraRotation);
+        cameraParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         camera.setParameters(cameraParameters);
     }
 }
