@@ -75,7 +75,7 @@ var ReactCameraViewWrapper = React.createClass({
     getDefaultProps() {
         return ({
             type: constants.Type.back,
-            captureTarget: constants.CaptureTarget.cameraRoll
+            captureTarget: constants.CaptureTarget.temp
         });
     },
 

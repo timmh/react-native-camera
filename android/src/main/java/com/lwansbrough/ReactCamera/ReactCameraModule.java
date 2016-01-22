@@ -74,7 +74,9 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
         public void onPictureTaken(byte[] data, Camera camera) {
             camera.startPreview();
 
-            switch(options.getString("target")) {
+            String target = options.getString("target");
+
+            switch(target) {
                 case "base64":
                     Bitmap bitmap = getBitmapFromData(data, camera, options);
                     byte[] byteArray;
@@ -90,19 +92,24 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
                     Media.insertImage(reactContext.getContentResolver(), gBitmap, options.getString("title"), options.getString("description"));
                     callback.invoke();
                 break;
-                case "disk":
+				case "disk": case "temp": default:
                     String outputDirectoryPath = null;
                     String outputFileName = null;
-                    try {
-                        outputDirectoryPath = options.getString("outputDirectoryPath");
-                    } catch (Exception e) {
-                        Log.v("camera", e.getMessage());
-                    }
-                    try {
-                        outputFileName = options.getString("outputFileName");
-                    } catch (Exception e) {
-                        Log.v("camera", e.getMessage());
-                    }
+                    if (target.equals("disk")) {
+                   	    try {
+                            outputDirectoryPath = options.getString("outputDirectoryPath");
+                        } catch (Exception e) {
+                            Log.v("camera", e.getMessage());
+                        }
+                        try {
+                            outputFileName = options.getString("outputFileName");
+                        } catch (Exception e) {
+                            Log.v("camera", e.getMessage());
+                        }
+					} else {
+						outputDirectoryPath = reactContext.getCacheDir().getAbsolutePath();
+					}
+
                     File pictureFile = getOutputMediaFile(outputDirectoryPath, outputFileName);
                     if (pictureFile == null) {
                         callback.invoke("directory error");
@@ -113,22 +120,6 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
                         fos.write(data);
                         fos.close();
                         callback.invoke(null, pictureFile.getAbsolutePath());
-                    } catch (Exception e) {
-                        callback.invoke(e.getMessage());
-                        e.printStackTrace();
-                    }
-                break;
-                case "temp":
-                    File tempFile = getTempMediaFile();
-                    if (tempFile == null) {
-                        callback.invoke("directory error");
-                        return;
-                    }
-                    try {
-                        FileOutputStream fos = new FileOutputStream(tempFile);
-                        fos.write(data);
-                        fos.close();
-                        callback.invoke(null, tempFile.getAbsolutePath());
                     } catch (Exception e) {
                         callback.invoke(e.getMessage());
                         e.printStackTrace();
@@ -175,18 +166,6 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
             Log.v("camera", e.getMessage());
             return null;
         } catch (IOException e) {
-            Log.v("camera", e.getMessage());
-            return null;
-        }
-    }
-
-    private File getTempMediaFile(){
-        try {
-            File outputDir = reactContext.getCacheDir();
-            // @TODO what should prefix be?
-            File outputFile = File.createTempFile("reactNativeCameraPrefix", "jpg", outputDir);
-            return outputFile;
-        } catch (Exception e) {
             Log.v("camera", e.getMessage());
             return null;
         }
