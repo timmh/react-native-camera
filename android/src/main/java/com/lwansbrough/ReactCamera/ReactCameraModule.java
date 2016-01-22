@@ -118,6 +118,22 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
                         e.printStackTrace();
                     }
                 break;
+                case "temp":
+                    File tempFile = getTempMediaFile();
+                    if (tempFile == null) {
+                        callback.invoke("directory error");
+                        return;
+                    }
+                    try {
+                        FileOutputStream fos = new FileOutputStream(tempFile);
+                        fos.write(data);
+                        fos.close();
+                        callback.invoke(null, tempFile.getAbsolutePath());
+                    } catch (Exception e) {
+                        callback.invoke(e.getMessage());
+                        e.printStackTrace();
+                    }
+                break;
             }
         }
     }
@@ -159,6 +175,18 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
             Log.v("camera", e.getMessage());
             return null;
         } catch (IOException e) {
+            Log.v("camera", e.getMessage());
+            return null;
+        }
+    }
+
+    private File getTempMediaFile(){
+        try {
+            File outputDir = reactContext.getCacheDir();
+            // @TODO what should prefix be?
+            File outputFile = File.createTempFile("reactNativeCameraPrefix", "jpg", outputDir);
+            return outputFile;
+        } catch (Exception e) {
             Log.v("camera", e.getMessage());
             return null;
         }
